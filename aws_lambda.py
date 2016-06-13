@@ -1,16 +1,15 @@
 """
-This sample demonstrates a simple skill built with the Amazon Alexa Skills Kit.
-The Intent Schema, Custom Slots, and Sample Utterances for this skill, as well
-as testing instructions are located at http://amzn.to/1LzFrj6
-
-For additional samples, visit the Alexa Skills Kit Getting Started guide at
-http://amzn.to/1LGWsLG
+Copy this code to your aws lambda function for your my clock skill.
 """
 
 from __future__ import print_function
 import time
 import random
 import urllib2
+
+my_timezone = "pdt" ## Los Angeles
+## or utc, gmt, est, ...
+## for full list see https://github.com/progrium/timeapi/blob/master/timeapi.rb
 
 
 def lambda_handler(event, context):
@@ -20,11 +19,6 @@ def lambda_handler(event, context):
     print("event.session.application.applicationId=" +
           event['session']['application']['applicationId'])
 
-    """
-    Uncomment this if statement and populate with your skill's application ID to
-    prevent someone else from configuring a skill that sends requests to this
-    function.
-    """
     # if (event['session']['application']['applicationId'] !=
     #         "amzn1.echo-sdk-ams.app.[unique-value-here]"):
     #     raise ValueError("Invalid Application ID")
@@ -92,49 +86,41 @@ def on_session_ended(session_ended_request, session):
 
 
 def get_welcome_response():
-    """ If we wanted to initialize the session to have some attributes we could
-    add those here
+    """ Give the current time and suggest what you can ask
     """
 
     session_attributes = {}
-    card_title = "Welcome"
-    speech_output = "Welcome to the Alexa Skills Kit sample. " \
-                    "Please tell me your favorite color by saying, " \
-                    "my favorite color is red"
-    # If the user either does not reply to the welcome message or says something
-    # that is not understood, they will be prompted again with this text.
-    reprompt_text = "Please tell me your favorite color by saying, " \
-                    "my favorite color is red."
+    date_str = urllib2.urlopen('http://www.timeapi.org/'+my_timezone+'/now?format=%20%25I:%25M').read()
+    hours, minutes = date_str.split(':')
+    speech_output = "Hi, It`s " + time2text(int(hours), int(minutes))
+    reprompt_text = ""
     should_end_session = False
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+        speech_output, reprompt_text, should_end_session))
 
 
 def handle_session_end_request():
-    card_title = "Session Ended"
-    speech_output = "Thank you for trying the Alexa Skills Kit sample. " \
-                    "Have a nice day! "
+    speech_output = "Have a nice day! "
     # Setting this to true ends the session and exits the skill.
     should_end_session = True
     return build_response({}, build_speechlet_response(
-        card_title, speech_output, None, should_end_session))
+        speech_output, None, should_end_session))
 
 
 
 def timeIntent(intent, session):
-    """ Sets the color in the session and prepares the speech to reply to the
-    user.
+    """ 
+    Return Natural Language Text for the current time.
     """
 
-    card_title = intent['name']
     session_attributes = {}
     should_end_session = True
-    date_str = urllib2.urlopen('http://www.timeapi.org/pdt/now?format=%20%25I:%25M').read()
+    date_str = urllib2.urlopen('http://www.timeapi.org/'+my_timezone+'/now?format=%20%25I:%25M').read()
     hours, minutes = date_str.split(':')
     speech_output = time2text(int(hours), int(minutes))
     reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
-        card_title, speech_output, reprompt_text, should_end_session))
+        speech_output, reprompt_text, should_end_session))
 
 
 # --helpers for the time
@@ -152,7 +138,7 @@ def getHour(hour):
     return numbersText[hour];
 
 def getDirection(t):
-    cases = {-2: "SOON", -1: "ALMOST", 0: "EXACTLY", 1: "ALREADY", 2: "PAST"}
+    cases = {-2: "SOON", -1: "ALMOST", 0: "EXACTLY", 1: "ALREADY", 2: ""}
     return cases.get(t, "");
 
 def getIntervalPrefix(minutes):
