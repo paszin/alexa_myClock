@@ -10,6 +10,7 @@ http://amzn.to/1LGWsLG
 from __future__ import print_function
 import time
 import random
+import urllib2
 
 
 def lambda_handler(event, context):
@@ -128,8 +129,9 @@ def timeIntent(intent, session):
     card_title = intent['name']
     session_attributes = {}
     should_end_session = True
-
-    speech_output = time2text(time.localtime().tm_hour, time.localtime().tm_min)
+    date_str = urllib2.urlopen('http://www.timeapi.org/pdt/now?format=%20%25I:%25M').read()
+    hours, minutes = date_str.split(':')
+    speech_output = time2text(int(hours), int(minutes))
     reprompt_text = speech_output
     return build_response(session_attributes, build_speechlet_response(
         card_title, speech_output, reprompt_text, should_end_session))
