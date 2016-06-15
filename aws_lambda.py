@@ -138,11 +138,11 @@ def getHour(hour):
     return numbersText[hour];
 
 def getDirection(t):
-    cases = {-2: "SOON", -1: "ALMOST", 0: "EXACTLY", 1: "ALREADY", 2: ""}
+    cases = {-2: "CLOSE TO", -1: "NEARLY", 0: "EXACTLY", 1: "", 2: "ALREADY"}
     return cases.get(t, "");
 
 def getIntervalPrefix(minutes):
-    cases = {0: "",5: "FIVE PAST",10: "TEN PAST", 15 : "QUATER PAST", 20 : "TWENTY PAST", 25 : "FIVE TO HALF PAST", 30 : "HALF PAST", 35 : "TWENTYFIVE TO", 40 : "TWENTY TO", 45 : "QUATER TO", 50 : "TEN TO", 55 : "FIVE TO"}
+    cases = {0: "",5: "FIVE PAST",10: "TEN PAST", 15 : "QUARTER PAST", 20 : "TWENTY PAST", 25 : "FIVE TO HALF PAST", 30 : "HALF PAST", 35 : "TWENTYFIVE TO", 40 : "TWENTY TO", 45 : "QUARTER TO", 50 : "TEN TO", 55 : "FIVE TO"}
     return cases.get(minutes, "")
 
 def getIntervalSuffix(minutes):
