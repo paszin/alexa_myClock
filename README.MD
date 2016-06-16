@@ -5,16 +5,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 ### Setup
 
 #### Skill Information

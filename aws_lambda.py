@@ -65,6 +65,8 @@ def on_intent(intent_request, session):
     # Dispatch to your skill's intent handlers
     if intent_name == "TimeIntent":
         return timeIntent(intent, session)
+    elif intent_name == "RandomFactTodayIntent":
+        return randomFactTodayIntent(intent, session)
     elif intent_name == "AMAZON.HelpIntent":
         return get_welcome_response()
     elif intent_name == "AMAZON.CancelIntent" or intent_name == "AMAZON.StopIntent":
@@ -108,6 +110,20 @@ def handle_session_end_request():
 
 
 
+
+def randomFactTodayIntent(intent, session):
+    """ """
+    
+    session_attributes = {}
+    should_end_session = True
+    date_str = urllib2.urlopen('http://www.timeapi.org/'+my_timezone+'/now?format=%25-m%20%25e').read()
+    month, day = date_str.split(' ')
+    speech_output = getRandomFact(int(day), int(month))
+    reprompt_text = speech_output
+    return build_response(session_attributes, build_speechlet_response(
+        speech_output, reprompt_text, should_end_session))
+
+
 def timeIntent(intent, session):
     """ 
     Return Natural Language Text for the current time.
@@ -123,8 +139,16 @@ def timeIntent(intent, session):
         speech_output, reprompt_text, should_end_session))
 
 
-# --helpers for the time
+# --helper for random fact
 
+def getRandomFact(day, month):
+    url = 'http://numbersapi.com/%i/%i/date' %(month, day)
+    text = urllib2.urlopen(url).read()
+    return text
+
+
+
+# --helpers for the time
 
 def closestDistanceToZero(number, maxn):
     number = number%maxn

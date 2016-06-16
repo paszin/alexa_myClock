@@ -3,6 +3,10 @@
     {
       "intent": "TimeIntent",
       "slots" : []
+    },
+    {
+      "intent": "RandomFactTodayIntent",
+      "slots" : []
     }
     ]
 }
